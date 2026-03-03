@@ -1,61 +1,55 @@
+// Apply the Android application plugin (uses the version from project build.gradle)
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+
+// If you're using Kotlin, uncomment the next line:
+// apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    namespace 'com.upsc.air1system'
-    compileSdk 34
+    // Replace with your actual namespace (usually your package name)
+    namespace 'com.example.yourapp'
+    
+    // Set the SDK versions you're targeting
+    compileSdk 34   // or whatever your target is
 
     defaultConfig {
-        applicationId "com.upsc.air1system"
-        minSdk 23
-        targetSdk 34
+        // Replace with your actual application ID (package name)
+        applicationId "com.example.yourapp"
+        
+        minSdk 21    // or your minimum supported SDK
+        targetSdk 34 // or your target SDK
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
-        }
-        debug {
-            applicationIdSuffix ".debug"
         }
     }
 
+    // If you need Java 8 or above, add this:
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-
-    packagingOptions {
-        jniLibs.useLegacyPackaging = true
-    }
-}
-
-repositories {
-    google()
-    mavenCentral()
-    maven { url 'https://jitpack.io' }
+    // If using Kotlin, you might also need:
+    // kotlinOptions {
+    //     jvmTarget = '1.8'
+    // }
 }
 
 dependencies {
+    // Add your dependencies here (no repositories block needed!)
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.webkit:webkit:1.8.0'
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-
-    // Capacitor core
-    implementation 'com.capacitorjs:core:6.0.0'
-
+    
+    // Example for Kotlin (if using)
+    // implementation 'androidx.core:core-ktx:1.12.0'
+    
+    // Testing dependencies (optional)
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
