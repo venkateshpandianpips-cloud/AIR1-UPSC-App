@@ -1,56 +1,14 @@
-// Apply the Android application plugin (uses the version from project build.gradle)
-apply plugin: 'com.android.application'
-
-// If you're using Kotlin, uncomment the next line:
-// apply plugin: 'org.jetbrains.kotlin.android'
-
-android {
-    // Replace with your actual namespace (usually your package name)
-    namespace 'com.example.yourapp'
-    
-    // Set the SDK versions you're targeting
-    compileSdk 34   // or whatever your target is
-
-    defaultConfig {
-        // Replace with your actual application ID (package name)
-        applicationId "com.example.yourapp"
-        
-        minSdk 21    // or your minimum supported SDK
-        targetSdk 34 // or your target SDK
-        versionCode 1
-        versionName "1.0"
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
     }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.2'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10'   // remove if not using Kotlin
     }
-
-    // If you need Java 8 or above, add this:
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    // If using Kotlin, you might also need:
-    // kotlinOptions {
-    //     jvmTarget = '1.8'
-    // }
 }
 
-dependencies {
-    // Add your dependencies here (no repositories block needed!)
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    
-    // Example for Kotlin (if using)
-    // implementation 'androidx.core:core-ktx:1.12.0'
-    
-    // Testing dependencies (optional)
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
