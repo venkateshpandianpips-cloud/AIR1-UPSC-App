@@ -1,14 +1,53 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
+// Apply plugins using the old-style (picks up versions from project build.gradle)
+apply plugin: 'com.android.application'
+
+// If you use Kotlin, uncomment the next line:
+// apply plugin: 'org.jetbrains.kotlin.android'
+
+android {
+    // Replace with your actual namespace (usually your app package)
+    namespace 'com.example.yourapp'
+
+    // Set your compile SDK version (use 34, 33, etc.)
+    compileSdk 34
+
+    defaultConfig {
+        // Replace with your actual application ID
+        applicationId "com.example.yourapp"
+
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.2'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10'   // remove if not using Kotlin
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
     }
+
+    // Optional: Java 8 support
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // If using Kotlin, uncomment the following:
+    // kotlinOptions {
+    //     jvmTarget = '1.8'
+    // }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+dependencies {
+    // Add your dependencies here – no repositories block!
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    // Testing dependencies (optional)
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
