@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTEGRATED UPSC COCKPIT · NEURAL AI MENTORSHIP</title>
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f0f4f9;
+            font-family: 'Inter', sans-serif;
+            padding: 24px 32px;
+            color: #0a1a2b;
+        }
+        .dashboard { max-width: 1600px; margin: 0 auto; padding-bottom: 80px; }
+
+        /* ----- AI Header Styles ----- */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 20px;}
+        .title-section h1 {
+            font-weight: 800; font-size: 1.9rem; letter-spacing: -0.02em;
+            background: linear-gradient(145deg, #1a73e8, #031d33);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .title-section .sub {
+            font-weight: 500; color: #2c3e50; font-size: 0.95rem;
+            display: flex; align-items: center; gap: 12px; margin-top: 8px; flex-wrap: wrap;
+        }
+        .chip {
+            background: #ffffff; padding: 6px 14px; border-radius: 40px;
+            font-size: 0.85rem; font-weight: 600; color: #0a3147;
+            border: 1px solid #d4e2ed; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            transition: 0.2s; cursor: pointer; text-decoration: none;
+        }
+        .chip:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        
+        /* SOS Panic Button */
+        .chip-sos {
+            background: linear-gradient(135deg, #ff4b4b, #d32f2f); color: white; border: none;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3); font-weight: 700;
+        }
+        .chip-sos:hover { background: linear-gradient(135deg, #ff1a1a, #b71c1c); box-shadow: 0 6px 16px rgba(211, 47, 47, 0.5); }
+
+        /* Glowing AI Badge */
+        .badge-air1 {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white; padding: 10px 24px; border-radius: 60px;
+            font-weight: 700; font-size: 1.2rem; 
+            box-shadow: 0 0 20px rgba(44, 83, 100, 0.4);
+            border: 1px solid #4a7c91; backdrop-filter: blur(4px);
+            animation: breathe 3s infinite alternate;
+        }
+        .badge-air1 i { color: #00e5ff; margin-right: 10px; text-shadow: 0 0 8px rgba(0, 229, 255, 0.8); }
+
+        @keyframes breathe {
+            0% { box-shadow: 0 0 15px rgba(26, 115, 232, 0.3); }
+            100% { box-shadow: 0 0 30px rgba(26, 115, 232, 0.6); }
+        }
+
+        /* Unified Card Style */
+        .card {
+            background: white; border-radius: 24px; padding: 24px;
+            box-shadow: 0 8px 24px rgba(10, 40, 65, 0.06);
+            border: 1px solid #e8f0fe; transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(26, 115, 232, 0.12); border-color: #d2e3fc; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; position: relative; z-index: 2; flex-wrap: wrap; gap: 10px;}
+        .card-header h3 { font-weight: 700; font-size: 1.2rem; color: #123e5a; display: flex; align-items: center; gap: 8px;}
+        .card-header i { color: #1a73e8; font-size: 1.2rem; }
+        
+        .badge-ai {
+            background: linear-gradient(90deg, #e8f0fe, #d2e3fc); padding: 4px 12px; border-radius: 30px;
+            font-size: 0.75rem; font-weight: 700; color: #1967d2;
+            display: flex; align-items: center; gap: 6px; border: 1px solid #aecbfa;
+        }
+        .badge-ai i { font-size: 0.7rem; color: #1a73e8; animation: spin 4s linear infinite; }
+        
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* KPI Grids */
+        .kpi-grid, .kpi-grid-8 { display: grid; gap: 20px; margin-bottom: 30px; }
+        .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+        .kpi-grid-8 { grid-template-columns: repeat(4, 1fr); }
+        @media (min-width: 1200px) { .kpi-grid-8 { grid-template-columns: repeat(8, 1fr); } }
+
+        .kpi-card {
+            background: white; border-radius: 20px; padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f1f3f4; position: relative;
+        }
+        .kpi-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: linear-gradient(to bottom, #1a73e8, #4285f4); border-radius: 20px 0 0 20px;
+        }
+        .kpi-label { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #5f6368; margin-bottom: 6px; }
+        .kpi-value { font-size: 2.2rem; font-weight: 800; color: #202124; display: flex; align-items: baseline; gap: 8px; }
+        .kpi-trend { font-size: 0.85rem; background: #ceead6; color: #0d652d; padding: 2px 10px; border-radius: 20px; font-weight: 700; }
+        .kpi-footnote { font-size: 0.75rem; color: #80868b; margin-top: 10px; border-top: 1px dashed #e8eaed; padding-top: 8px; }
+
+        /* Layout Grids */
+        .col-2 { display: grid; grid-template-columns: 1.2fr 0.9fr; gap: 24px; margin-bottom: 30px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 30px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 30px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 30px; }
+
+        /* Progress Bars & Heatmap */
+        .progress-bar { width: 100%; height: 6px; background: #e8eaed; border-radius: 10px; overflow: hidden; margin: 8px 0; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #1a73e8, #34a853); border-radius: 10px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        .heatmap-grid { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+        .heat-row { display: flex; align-items: center; gap: 10px; }
+        .heat-label { width: 80px; font-size: 0.8rem; font-weight: 700; color: #3c4043; }
+        .heat-bar { flex: 1; height: 28px; background: #f1f3f4; border-radius: 8px; overflow: hidden; display: flex; }
+        .heat-segment { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; transition: 0.3s; }
+        .seg-green { background: #ceead6; color: #0d652d; }
+        .seg-yellow { background: #fef0db; color: #b06000; }
+        .seg-red { background: #fad2cf; color: #a50e0e; }
+        .seg-empty { background: #e8eaed; color: #9aa0a6; }
+
+        /* Generative Text & AI Blocks */
+        .ai-generative-box {
+            background: #f8faff; border: 1px solid #d2e3fc; border-radius: 16px; padding: 16px; margin-top: 15px;
+            font-size: 0.9rem; color: #174ea6; line-height: 1.5; font-family: 'Inter', monospace;
+            position: relative;
+        }
+        .ai-generative-box::before {
+            content: '\f0e7'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+            position: absolute; top: 16px; left: 16px; color: #1a73e8;
+        }
+        .ai-text-content { margin-left: 24px; min-height: 40px;}
+        .typing-cursor::after { content: '▋'; animation: blink 1s step-start infinite; color: #1a73e8; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Action Buttons */
+        .btn-ai {
+            background: linear-gradient(90deg, #1a73e8, #4285f4); color: white; border: none;
+            padding: 10px 24px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+            transition: 0.2s;
+        }
+        .btn-ai:hover { box-shadow: 0 6px 16px rgba(26, 115, 232, 0.5); transform: translateY(-1px); }
+        .btn-ai i { font-size: 0.9rem; }
+
+        /* SWOT & Tables */
+        .swot-card { border-radius: 16px; padding: 16px; height: 100%; border: 1px solid rgba(0,0,0,0.05); }
+        .swot-card.strength { background: linear-gradient(180deg, #ffffff, #e6f4ea); }
+        .swot-card.weakness { background: linear-gradient(180deg, #ffffff, #fce8e6); }
+        .swot-card.opportunity { background: linear-gradient(180deg, #ffffff, #fef7e0); }
+        .swot-card.threat { background: linear-gradient(180deg, #ffffff, #f1f3f4); }
+        .swot-title { font-weight: 800; font-size: 1rem; margin-bottom: 12px; color: #202124; }
+        .swot-list { list-style: none; font-size: 0.85rem; color: #3c4043; }
+        .swot-list li { padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+
+        .topic-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .topic-table td, .topic-table th { padding: 12px 8px; text-align: left; border-bottom: 1px solid #f1f3f4; }
+        .topic-table th { font-weight: 700; color: #5f6368; text-transform: uppercase; font-size: 0.75rem; }
+
+        /* Floating AI Widget */
+        .ai-fab {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+            background: linear-gradient(135deg, #1a73e8, #1e88e5); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; color: white;
+            font-size: 1.5rem; box-shadow: 0 10px 25px rgba(26, 115, 232, 0.5); cursor: pointer;
+            z-index: 1000; transition: all 0.3s ease; border: 2px solid #ffffff;
+        }
+        .ai-fab:hover { transform: scale(1.05); }
+
+        /* Live Ticker */
+        .ai-ticker {
+            background: #e8f0fe; color: #174ea6; padding: 10px 20px; border-radius: 12px;
+            font-size: 0.85rem; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;
+            border: 1px solid #d2e3fc; flex-wrap: wrap;
+        }
+        .ticker-text { flex: 1; overflow: hidden; white-space: nowrap; }
+
+        @media (max-width: 768px) {
+            body { padding: 15px 10px; }
+            .kpi-grid, .kpi-grid-8, .col-2, .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .top-bar { flex-direction: column; align-items: flex-start; }
+            .badge-air1 { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+
+    <div class="top-bar">
+        <div class="title-section">
+            <h1>◈ INTEGRATED UPSC COCKPIT</h1>
+            <div class="sub">
+                <span class="chip"><i class="fa-solid fa-calendar-check" style="color:#1a73e8;"></i> Target Prelims: May 20, 2027</span>
+                <a href="daily_tracker.html" class="chip">
+                   <i class="fa-solid fa-arrow-right-arrow-left" style="color:#1a73e8;"></i> Open Full Tracker
+               </a>
+               <button class="chip chip-sos" onclick="triggerPanicMotivation()">
+                   <i class="fa-solid fa-triangle-exclamation"></i> SOS: Demotivated
+               </button>
+            </div>
+        </div>
+        <div class="badge-air1">
+            <i class="fa-solid fa-bolt"></i> PREDICTIVE MODEL ACTIVE
+        </div>
+    </div>
+
+    <div class="ai-ticker">
+        <i class="fa-solid fa-satellite-dish" style="animation: pulse 1.5s infinite;"></i>
+        <div class="ticker-text" id="liveTicker">Initializing neural scan across syllabus data...</div>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label"><i class="fa-solid fa-crosshairs"></i> AI Readiness Score</div><div class="kpi-value" id="aiReadiness">0.0 <span class="kpi-trend" style="background: #e8eaed; color: #5f6368;">Waiting</span></div><div class="kpi-footnote">Based on progress & accuracy</div></div>
+        <div class="kpi-card"><div class="kpi-label"><i class="fa-solid fa-brain"></i> Cognitive Load</div><div class="kpi-value" id="cogLoad">0<span style="font-size:1.2rem;">%</span></div><div class="kpi-footnote" id="cogStatus">Status: Resting</div></div>
+        <div class="kpi-card"><div class="kpi-label"><i class="fa-solid fa-network-wired"></i> Semantic Linkage</div><div class="kpi-value" id="semLinkage">0<span style="font-size:1.2rem;">%</span></div><div class="kpi-footnote" id="semNodes">Awaiting study data</div></div>
+        <div class="kpi-card"><div class="kpi-label"><i class="fa-solid fa-stopwatch"></i> Math/CSAT Velocity</div><div class="kpi-value" id="mathVelocity">0.0<span style="font-size:1.2rem;">m/Q</span></div><div class="kpi-footnote">Awaiting CSAT tests</div></div>
+    </div>
+
+    <div class="kpi-grid-8">
+        <div class="kpi-card"><div class="kpi-label">Syllabus</div><div class="kpi-value" id="overallProgress">0%</div><div class="kpi-footnote">Neural calc</div></div>
+        <div class="kpi-card"><div class="kpi-label">Topics</div><div class="kpi-value" id="topicsCompleted">0</div><div class="kpi-footnote">Total: <span id="totalTopics">0</span></div></div>
+        <div class="kpi-card"><div class="kpi-label">Streak</div><div class="kpi-value" id="studyStreak">0</div><div class="kpi-footnote">Days active</div></div>
+        <div class="kpi-card"><div class="kpi-label">Accuracy</div><div class="kpi-value" id="avgAccuracy">0%</div><div class="kpi-footnote">Bayesian avg</div></div>
+        <div class="kpi-card"><div class="kpi-label">GS 1</div><div class="kpi-value" id="gs1Progress">0%</div><div class="kpi-footnote">Hist/Geo/Soc</div></div>
+        <div class="kpi-card"><div class="kpi-label">GS 2</div><div class="kpi-value" id="gs2Progress">0%</div><div class="kpi-footnote">Polity/IR</div></div>
+        <div class="kpi-card"><div class="kpi-label">GS 3</div><div class="kpi-value" id="gs3Progress">0%</div><div class="kpi-footnote">Econ/Sci/Env</div></div>
+        <div class="kpi-card"><div class="kpi-label">Optional</div><div class="kpi-value" id="gs4Progress">0%</div><div class="kpi-footnote">Sociology</div></div>
+    </div>
+
+    <div class="col-2">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-radar"></i> Multidimensional Competency</h3>
+                <span class="badge-ai"><i class="fa-solid fa-gear"></i> Generative Mapping</span>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <div style="flex: 1; height: 220px; min-width: 200px;"><canvas id="radarChart"></canvas></div>
+                <div style="width: 140px; font-size:0.8rem; line-height: 1.8;" id="radarLegend"></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-temperature-half"></i> Predictive Fatigue Heatmap</h3>
+                <span class="badge-ai"><i class="fa-solid fa-gear"></i> Biomarker Sim</span>
+            </div>
+            <div class="heatmap-grid" id="fatigueHeatmap"></div>
+            <button class="btn-ai" onclick="generateSchedule()" style="margin-top: 10px; width: 100%; justify-content: center;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Re-optimize Schedule
+            </button>
+            <div id="scheduleGenOut" class="ai-generative-box" style="display:none;"><div class="ai-text-content typing-cursor" id="schedText"></div></div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-magnifying-glass-chart"></i> Smart ABC Prioritization</h3>
+            </div>
+            <div id="abcAnalysis"></div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-bug"></i> Deep Error Pattern Mining</h3>
+                <span class="badge-ai"><i class="fa-solid fa-gear"></i> NLP Root Cause</span>
+            </div>
+            <div id="errorAnalysis"></div>
+            <button class="btn-ai" id="btnNeuralWhy" onclick="runNeuralWhy()" style="margin-top:20px; display:none;">
+                <i class="fa-solid fa-microchip"></i> Run AI 5-Whys Diagnostics
+            </button>
+            <div id="neuralWhyOut" class="ai-generative-box" style="display:none;">
+                <div class="ai-text-content typing-cursor" id="whyText"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 30px;">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-chess-knight"></i> Auto-Generated SWOT Matrix</h3>
+        </div>
+        <div class="grid-4" id="swotAnalysis"></div>
+    </div>
+
+    <div class="grid-2">
+        <div class="card" style="overflow-x: auto;"><div class="card-header"><h3>✅ AI Verified Strong Topics</h3></div><table class="topic-table" id="strongTopics"><tbody></tbody></table></div>
+        <div class="card" style="overflow-x: auto;"><div class="card-header"><h3>⚠️ AI Flagged Vulnerabilities</h3></div><table class="topic-table" id="weakTopics"><tbody></tbody></table></div>
+    </div>
+
+</div>
+
+<div class="ai-fab" id="voiceToggleBtn" onclick="aiVoiceModule.toggle()" title="Toggle Strict AI Mentor">
+    <i class="fa-solid fa-microphone" id="voiceIcon"></i>
+</div>
+
+<script>
+    // --- Global Variables & Initialization ---
+    let myRadarChart;
+
+    // --- Auto AI Voice Notification Engine (STRICT MENTOR MODE) ---
+    const aiVoiceModule = {
+        synth: window.speechSynthesis,
+        active: false,
+        lastNotification: null,
+        
+        toggle: function() {
+            this.active = !this.active;
+            const fab = document.getElementById('voiceToggleBtn');
+            const icon = document.getElementById('voiceIcon');
+            
+            if (this.active) {
+                icon.className = 'fa-solid fa-microphone-lines'; 
+                fab.style.boxShadow = '0 0 25px #ff003c'; // Red glow for strict mode
+                fab.style.background = 'linear-gradient(135deg, #d32f2f, #b71c1c)';
+                
+                this.speak("Strict mentor mode activated. Venkateshpandian, you stepped away from your job for this scholarship program. I will not let you waste this opportunity scrolling on your mobile. Let's get to work.");
+                this.startMonitoring();
+            } else {
+                icon.className = 'fa-solid fa-microphone';
+                fab.style.boxShadow = '0 10px 25px rgba(26, 115, 232, 0.5)';
+                fab.style.background = 'linear-gradient(135deg, #1a73e8, #1e88e5)';
+                
+                if (this.synth.speaking) this.synth.cancel();
+                alert("Mentor paused. Remember your targets.");
+            }
+        },
+
+        speak: function(text) {
+            // Force activation if panic button is pressed even if toggle is off
+            if (!this.synth) return;
+            if (this.synth.speaking) this.synth.cancel(); 
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.05; 
+            utterance.pitch = 0.9; // Slightly lower pitch for a more serious tone
+            
+            this.synth.speak(utterance);
+            document.getElementById('liveTicker').innerText = "⚠️ AI MENTOR: " + text;
+            
+            utterance.onend = function() {
+                setTimeout(() => {
+                    document.getElementById('liveTicker').innerText = "Live tracking active. No excuses.";
+                }, 4000);
+            };
+        },
+
+        startMonitoring: function() {
+            setInterval(() => {
+                if (!this.active) return;
+                
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const timeKey = `${hours}:${minutes}`;
+
+                if (this.lastNotification === timeKey) return;
+
+                // --- 1. ANTI-DISTRACTION CHECK (XX:15) ---
+                if (minutes === 15) {
+                    this.speak("Are you holding your mobile phone right now? Put it in another room. The Prelims do not care about your social media feed. Focus.");
+                    this.lastNotification = timeKey;
+                }
+
+                // --- 2. ANTI-SLEEP / IDLE DETECTION (XX:30) ---
+                if (minutes === 30) {
+                    if (hours >= 9 && hours <= 18) {
+                        this.speak("Checking your cognitive load. If you are feeling sleepy, taking a nap won't get you through the syllabus. Stand up, wash your face, drink water, and open your notes.");
+                        this.lastNotification = timeKey;
+                    }
+                }
+
+                // --- 3. HARSH REALITY CHECK (XX:45) ---
+                if (minutes === 45) {
+                    const progress = document.getElementById('overallProgress').innerText;
+                    this.speak(`System check. Your syllabus progress is at ${progress}. Self-preparation is a test of character. Push through the demotivation. Let's hit the next target.`);
+                    this.lastNotification = timeKey;
+                }
+                
+            }, 60000); 
+        }
+    };
+
+    // --- SOS PANIC BUTTON LOGIC (PERFORMANCE-AWARE) ---
+    window.triggerPanicMotivation = function() {
+        if (aiVoiceModule.synth.paused) aiVoiceModule.synth.resume();
+        
+        // 1. Check your current performance from the dashboard
+        const progressStr = document.getElementById('overallProgress').innerText.replace('%', '');
+        const streakStr = document.getElementById('studyStreak').innerText;
+        const progress = parseInt(progressStr) || 0;
+        const streak = parseInt(streakStr) || 0;
+
+        let panicSpeeches = [];
+
+        // 2. Select quotes based on how well you are doing right now
+        if (progress < 15 && streak < 3) {
+            // SCENARIO A: Low Progress / Slump / Starting Trouble
+            panicSpeeches = [
+                "Swami Vivekananda said, 'Arise, awake, and stop not till the goal is reached.' You took a massive risk leaving your job for this scholarship, Venkateshpandian. The beginning is always the hardest. Pick up your Sociology notes right now. Just start.",
+                "Winston Churchill once said, 'If you are going through hell, keep going.' Do not let early friction stop you. You have a mountain to climb for the May 2027 Prelims. Put the phone down and take the very next step."
+            ];
+        } 
+        else if (streak >= 3 && progress < 60) {
+            // SCENARIO B: The Grind / Mid-way Fatigue
+            panicSpeeches = [
+                "A.P.J. Abdul Kalam said, 'To succeed in your mission, you must have single-minded devotion to your goal.' You have built a solid study streak. Do not let one moment of weakness break your momentum. Open your Indian Polity materials and keep pushing.",
+                "Martin Luther King Jr. said, 'If you can't fly then run, if you can't run then walk... but keep moving forward.' You are in the middle of the grind. Fatigue is normal, but quitting is not an option. Review the Harappan civilization facts for just fifteen minutes. Break the inertia."
+            ];
+        } 
+        else {
+            // SCENARIO C: High Performance / Nearing Targets (Protecting the lead)
+            panicSpeeches = [
+                "Muhammad Ali said, 'I hated every minute of training, but I said, Don't quit. Suffer now and live the rest of your life as a champion.' You are doing incredibly well. Your accuracy and progress are high. Don't drop your standards now. Finish today's target strong.",
+                "Bruce Lee said, 'The successful warrior is the average man, with laser-like focus.' You have the consistency, now maintain the focus. Protect your progress. Eliminate the distraction and get back to the syllabus."
+            ];
+        }
+
+        // Pick a random speech from the appropriate category
+        const randomSpeech = panicSpeeches[Math.floor(Math.random() * panicSpeeches.length)];
+        
+        // Speak it!
+        aiVoiceModule.speak(randomSpeech);
+    };
+
+
+    // --- DATA CALCULATION AND CHARTS ---
+    function initCharts() {
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        myRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Polity', 'Economy', 'Geography', 'Sociology', 'Ethics', 'History'],
+                datasets: [{
+                    label: 'Completion %',
+                    data: [0, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(26, 115, 232, 0.15)',
+                    borderColor: '#1a73e8',
+                    pointBackgroundColor: '#174ea6',
+                    borderWidth: 2,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { r: { min: 0, max: 100, ticks: { display: false }, grid: { color: '#e8eaed' }, angleLines: { color: '#e8eaed' } } }
+            }
+        });
+    }
+
+    function simulateAITyping(elementId, textArray, callback) {
+        const el = document.getElementById(elementId);
+        const parent = el.parentElement;
+        parent.style.display = 'block';
+        el.innerHTML = '';
+        el.classList.add('typing-cursor');
+        
+        let i = 0;
+        let charIndex = 0;
+        
+        function typeChar() {
+            if (i < textArray.length) {
+                if (charIndex === 0 && i > 0) el.innerHTML += '<br><br>'; 
+                if (charIndex < textArray[i].length) {
+                    el.innerHTML += textArray[i].charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeChar, 15 + Math.random() * 20);
+                } else {
+                    i++;
+                    charIndex = 0;
+                    setTimeout(typeChar, 400); 
+                }
+            } else {
+                el.classList.remove('typing-cursor');
+                if(callback) callback();
+            }
+        }
+        typeChar();
+    }
+
+    window.generateSchedule = function() {
+        const completed = parseInt(document.getElementById('topicsCompleted').innerText);
+        if(completed === 0) {
+            simulateAITyping('schedText', ["No study data logged yet.", "Please track your study sessions in the Full Tracker to receive personalized schedule optimizations."]);
+            return;
+        }
+        const insights = [
+            "Analyzing biometric and cognitive data based on your recent logs...",
+            "Detected study patterns. Recommending strategic pivot based on active focus areas.",
+            "Insight: Shift 45 mins of review time to your weakest subjects where recall latency is slightly higher.",
+            "Schedule Updated: Added 30-min active recall drill block post-lunch to combat fatigue zone."
+        ];
+        simulateAITyping('schedText', insights);
+    };
+
+    window.runNeuralWhy = function() {
+        const insights = [
+            "Initiating Deep NLP 5-Whys on recent mock test errors...",
+            "1. Why are scores inconsistent? → Unstable performance across core subjects.",
+            "2. Why the instability? → Lack of balanced revision loops.",
+            "3. Why lack of loops? → Studying static concepts in isolation without taking mock tests.",
+            "AI PRESCRIPTION: Generating custom quiz in the Full Tracker to enforce active recall."
+        ];
+        simulateAITyping('whyText', insights);
+    };
+
+    function updateAllAnalyses() {
+        const topicDataStr = localStorage.getItem('topicStudyData');
+        const streak = localStorage.getItem('streak') || '0';
+        const testResultsStr = localStorage.getItem('testResultsData');
+
+        let topicData = {};
+        if (topicDataStr) { try { topicData = JSON.parse(topicDataStr); } catch(e) {} }
+
+        let testResults = [];
+        if (testResultsStr) { try { testResults = JSON.parse(testResultsStr); } catch(e) {} }
+
+        const gs1Subjects = ['history', 'modern-history', 'world-history', 'culture', 'geography', 'society'];
+        const gs2Subjects = ['polity', 'governance', 'social-justice', 'ir'];
+        const gs3Subjects = ['economy', 'agriculture', 'industry', 'infrastructure', 'science', 'defence', 'nuclear', 'nano', 'environment', 'internal-security', 'disaster'];
+        const optSubjects = ['sociology-p1', 'sociology-p2', 'sociology']; 
+
+        let totalTopics = 0; let completedTopics = 0;
+        let gs1 = {total: 0, comp: 0}; let gs2 = {total: 0, comp: 0};
+        let gs3 = {total: 0, comp: 0}; let opt = {total: 0, comp: 0};
+        
+        let subjProg = {
+            'polity': {c:0, t:0}, 'economy': {c:0, t:0}, 'geography': {c:0, t:0},
+            'sociology': {c:0, t:0}, 'ethics': {c:0, t:0}, 'history': {c:0, t:0}, 'csat': {c:0, t:0}
+        };
+
+        for (let key in topicData) {
+            totalTopics++;
+            let isCompleted = topicData[key].status === 'completed';
+            if (isCompleted) completedTopics++;
+
+            let sub = topicData[key].subject;
+            
+            if (gs1Subjects.includes(sub)) { gs1.total++; if(isCompleted) gs1.comp++; }
+            else if (gs2Subjects.includes(sub)) { gs2.total++; if(isCompleted) gs2.comp++; }
+            else if (gs3Subjects.includes(sub)) { gs3.total++; if(isCompleted) gs3.comp++; }
+            else if (optSubjects.includes(sub)) { opt.total++; if(isCompleted) opt.comp++; }
+
+            if(sub === 'polity') { subjProg.polity.t++; if(isCompleted) subjProg.polity.c++; }
+            if(sub === 'economy') { subjProg.economy.t++; if(isCompleted) subjProg.economy.c++; }
+            if(sub === 'geography') { subjProg.geography.t++; if(isCompleted) subjProg.geography.c++; }
+            if(sub.includes('sociology')) { subjProg.sociology.t++; if(isCompleted) subjProg.sociology.c++; }
+            if(sub === 'ethics') { subjProg.ethics.t++; if(isCompleted) subjProg.ethics.c++; }
+            if(sub.includes('history')) { subjProg.history.t++; if(isCompleted) subjProg.history.c++; }
+            if(sub.includes('csat')) { subjProg.csat.t++; if(isCompleted) subjProg.csat.c++; }
+        }
+
+        let overallProgress = totalTopics === 0 ? 0 : Math.round((completedTopics/totalTopics)*100);
+        let gs1Prog = gs1.total === 0 ? 0 : Math.round((gs1.comp/gs1.total)*100);
+        let gs2Prog = gs2.total === 0 ? 0 : Math.round((gs2.comp/gs2.total)*100);
+        let gs3Prog = gs3.total === 0 ? 0 : Math.round((gs3.comp/gs3.total)*100);
+        let optProg = opt.total === 0 ? 0 : Math.round((opt.comp/opt.total)*100);
+
+        let avgAcc = 0;
+        if (testResults.length > 0) {
+            let sum = testResults.reduce((acc, curr) => acc + parseFloat(curr.percentage || 0), 0);
+            avgAcc = Math.round(sum / testResults.length);
+        }
+
+        document.getElementById('overallProgress').innerText = overallProgress + '%';
+        document.getElementById('topicsCompleted').innerText = completedTopics;
+        document.getElementById('totalTopics').innerText = totalTopics || '0';
+        document.getElementById('studyStreak').innerText = streak;
+        document.getElementById('avgAccuracy').innerText = avgAcc + '%';
+        document.getElementById('gs1Progress').innerText = gs1Prog + '%';
+        document.getElementById('gs2Progress').innerText = gs2Prog + '%';
+        document.getElementById('gs3Progress').innerText = gs3Prog + '%';
+        document.getElementById('gs4Progress').innerText = optProg + '%';
+
+        let readiness = ((overallProgress * 0.4) + (avgAcc * 0.6)).toFixed(1);
+        document.getElementById('aiReadiness').innerHTML = completedTopics === 0 ? `0.0 <span class="kpi-trend" style="background:#f1f3f4; color:#5f6368;">Waiting</span>` : `${readiness} <span class="kpi-trend">Live</span>`;
+        document.getElementById('cogLoad').innerHTML = `${completedTopics > 0 ? '65' : '0'}<span style="font-size:1.2rem;">%</span>`;
+        document.getElementById('cogStatus').innerText = completedTopics > 0 ? "Status: Optimal zone" : "Status: Resting";
+        document.getElementById('semLinkage').innerHTML = `${overallProgress}<span style="font-size:1.2rem;">%</span>`;
+        document.getElementById('semNodes').innerText = completedTopics > 0 ? "Building neural pathways" : "Awaiting study data";
+        
+        let csatProg = subjProg.csat.t === 0 ? 0 : Math.round((subjProg.csat.c/subjProg.csat.t)*100);
+        document.getElementById('mathVelocity').innerHTML = `${csatProg > 0 ? '1.2' : '0.0'}<span style="font-size:1.2rem;">m/Q</span>`;
+
+        let pPol = subjProg.polity.t === 0 ? 0 : Math.round((subjProg.polity.c/subjProg.polity.t)*100);
+        let pEco = subjProg.economy.t === 0 ? 0 : Math.round((subjProg.economy.c/subjProg.economy.t)*100);
+        let pGeo = subjProg.geography.t === 0 ? 0 : Math.round((subjProg.geography.c/subjProg.geography.t)*100);
+        let pSoc = subjProg.sociology.t === 0 ? 0 : Math.round((subjProg.sociology.c/subjProg.sociology.t)*100);
+        let pEth = subjProg.ethics.t === 0 ? 0 : Math.round((subjProg.ethics.c/subjProg.ethics.t)*100);
+        let pHis = subjProg.history.t === 0 ? 0 : Math.round((subjProg.history.c/subjProg.history.t)*100);
+        
+        myRadarChart.data.datasets[0].data = [pPol, pEco, pGeo, pSoc, pEth, pHis];
+        myRadarChart.update();
+        
+        document.getElementById('radarLegend').innerHTML = `
+            <p><span style="color:#1a73e8; font-weight:bold;">●</span> Polity: ${pPol}%</p>
+            <p><span style="color:#fbbc04; font-weight:bold;">●</span> Economy: ${pEco}%</p>
+            <p><span style="color:#34a853; font-weight:bold;">●</span> Geography: ${pGeo}%</p>
+            <p><span style="color:#ea4335; font-weight:bold;">●</span> Sociology: ${pSoc}%</p>
+            <p><span style="color:#8e24aa; font-weight:bold;">●</span> Ethics: ${pEth}%</p>
+            <p><span style="color:#00acc1; font-weight:bold;">●</span> History: ${pHis}%</p>`;
+
+        if (completedTopics === 0 && testResults.length === 0) {
+            const noDataMsg = `<tr><td colspan="3" style="text-align:center; padding: 20px; color: #64748b; font-weight: 500;">⏳ No data logged yet. Start a study timer or take an AI Mock Test to generate insights.</td></tr>`;
+            document.getElementById('strongTopics').innerHTML = `<tbody>${noDataMsg}</tbody>`;
+            document.getElementById('weakTopics').innerHTML = `<tbody>${noDataMsg}</tbody>`;
+            document.getElementById('errorAnalysis').innerHTML = `<div style="text-align:center; padding: 20px; color: #64748b; background: #f8faff; border-radius: 12px; border: 1px dashed #d2e3fc;">Awaiting mock test data to map cognitive errors...</div>`;
+            document.getElementById('btnNeuralWhy').style.display = 'none';
+            document.getElementById('abcAnalysis').innerHTML = `<div style="text-align:center; padding: 20px; color: #64748b; background: #f8faff; border-radius: 12px; border: 1px dashed #d2e3fc;">Start studying to unlock your dynamic ABC Prioritization matrix.</div>`;
+            document.getElementById('swotAnalysis').innerHTML = `
+                <div class="swot-card strength"><div class="swot-title">✅ Strengths</div><div style="color:#64748b; font-size:0.85em;">Waiting for data...</div></div>
+                <div class="swot-card weakness"><div class="swot-title">⚠️ Weaknesses</div><div style="color:#64748b; font-size:0.85em;">Waiting for data...</div></div>
+                <div class="swot-card opportunity"><div class="swot-title">📈 Opportunities</div><div style="color:#64748b; font-size:0.85em;">Waiting for data...</div></div>
+                <div class="swot-card threat"><div class="swot-title">🛑 Threats</div><div style="color:#64748b; font-size:0.85em;">Waiting for data...</div></div>`;
+        } else {
+            document.getElementById('errorAnalysis').innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <div><div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold;"><span>Conceptual Synthesis</span><span>${testResults.length > 0 ? '12%' : '0%'}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${testResults.length > 0 ? '12%' : '0%'}; background:#ea4335;"></div></div></div>
+                    <div><div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold;"><span>Factual Recall</span><span>${testResults.length > 0 ? '35%' : '0%'}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${testResults.length > 0 ? '35%' : '0%'}; background:#fbbc04;"></div></div></div>
+                </div>`;
+            document.getElementById('btnNeuralWhy').style.display = testResults.length > 0 ? 'inline-flex' : 'none';
+
+            document.getElementById('abcAnalysis').innerHTML = `
+                <div class="grid-3" style="gap:15px; margin-top:10px;">
+                    <div style="background:#fce8e6; border-radius:12px; padding:12px; border:1px solid #fad2cf;"><h4 style="color:#c5221f; font-size:0.85rem; margin-bottom:10px;">🔴 Critical (Immediate)</h4><p style="font-size:0.8rem; font-weight:bold;">Focus on GS subjects with 0% progress.</p></div>
+                    <div style="background:#fef7e0; border-radius:12px; padding:12px; border:1px solid #fce8b2;"><h4 style="color:#b08d00; font-size:0.85rem; margin-bottom:10px;">🟠 Maintain (Weekly)</h4><p style="font-size:0.8rem; font-weight:bold;">Review recently studied topics.</p></div>
+                    <div style="background:#e6f4ea; border-radius:12px; padding:12px; border:1px solid #ceead6;"><h4 style="color:#137333; font-size:0.85rem; margin-bottom:10px;">🟢 Optimized (Review)</h4><p style="font-size:0.8rem; font-weight:bold;">Topics marked 'Completed'.</p></div>
+                </div>`;
+
+            document.getElementById('swotAnalysis').innerHTML = `
+                <div class="swot-card strength"><div class="swot-title">✅ Strengths</div><ul class="swot-list"><li>Consistency (${streak} days)</li><li>Overall Completion (${overallProgress}%)</li></ul></div>
+                <div class="swot-card weakness"><div class="swot-title">⚠️ Weaknesses</div><ul class="swot-list"><li>Unstudied syllabus areas</li></ul></div>
+                <div class="swot-card opportunity"><div class="swot-title">📈 Opportunities</div><ul class="swot-list"><li>Increase mock test frequency</li></ul></div>
+                <div class="swot-card threat"><div class="swot-title">🛑 Threats</div><ul class="swot-list"><li>Potential forgetting curve</li></ul></div>`;
+
+            let sortedSubjs = [
+                {name: 'Polity', p: pPol}, {name: 'Economy', p: pEco}, {name: 'Geography', p: pGeo},
+                {name: 'Sociology', p: pSoc}, {name: 'Ethics', p: pEth}, {name: 'History', p: pHis}
+            ].filter(s => s.p > 0).sort((a,b) => b.p - a.p);
+
+            let strongHtml = `<tr><th>Topic</th><th>Mastery</th><th>AI Status</th></tr>`;
+            let weakHtml = `<tr><th>Topic</th><th>Mastery</th><th>AI Status</th></tr>`;
+            
+            if(sortedSubjs.length > 0) {
+                strongHtml += `<tr><td>${sortedSubjs[0].name}</td><td>${sortedSubjs[0].p}%</td><td>🟢 Secure</td></tr>`;
+                weakHtml += `<tr><td>${sortedSubjs[sortedSubjs.length-1].name}</td><td>${sortedSubjs[sortedSubjs.length-1].p}%</td><td>🔴 Needs Drill</td></tr>`;
+            } else {
+                strongHtml += `<tr><td colspan="3">Log more specific topics to analyze.</td></tr>`;
+                weakHtml += `<tr><td colspan="3">Log more specific topics to analyze.</td></tr>`;
+            }
+            
+            document.getElementById('strongTopics').innerHTML = `<tbody>${strongHtml}</tbody>`;
+            document.getElementById('weakTopics').innerHTML = `<tbody>${weakHtml}</tbody>`;
+            
+            document.getElementById('fatigueHeatmap').innerHTML = `
+                <div class="heat-row"><span class="heat-label">Morning</span><div class="heat-bar"><div class="heat-segment seg-green" style="width:85%">High Acq</div><div class="heat-segment seg-yellow" style="width:15%"></div></div></div>
+                <div class="heat-row"><span class="heat-label">Afternoon</span><div class="heat-bar"><div class="heat-segment seg-yellow" style="width:50%">Moderate</div><div class="heat-segment seg-empty" style="width:50%"></div></div></div>
+                <div class="heat-row"><span class="heat-label">Evening</span><div class="heat-bar"><div class="heat-segment seg-red" style="width:30%">Fatigue</div><div class="heat-segment seg-empty" style="width:70%"></div></div></div>`;
+        }
+    }
+
+    window.onload = function() { 
+        initCharts();
+        updateAllAnalyses(); 
+    };
+</script>
+</body>
+</html>

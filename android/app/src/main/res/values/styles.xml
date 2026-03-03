@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base app theme -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary color matching the UPSC app -->
+        <item name="colorPrimary">#2563eb</item>
+        <item name="colorPrimaryDark">#1d4ed8</item>
+        <item name="colorAccent">#7c3aed</item>
+        <!-- Make status bar transparent so app fills full screen -->
+        <item name="android:statusBarColor">#2563eb</item>
+        <item name="android:navigationBarColor">#1e293b</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">@color/splash_bg</item>
+    </style>
+
+    <!-- Splash screen style -->
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+</resources>
